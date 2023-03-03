@@ -10,7 +10,7 @@ import torch
 import dataclasses
 
 from pathlib import Path
-from DataEntry import DataEntry
+from DataGenerator.DataEntry import DataEntry
 from typing import List
 
 
