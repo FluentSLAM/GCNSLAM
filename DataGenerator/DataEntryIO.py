@@ -14,9 +14,11 @@ from DataGenerator.DataEntry import DataEntry
 from typing import List
 
 
+# TODO: rewrite it to ZipFile, separate files inside the archive instead of blindly parsing tensors.
+
 class DataEntryWriter:
     def write(self, data_entry : DataEntry, path : Path):
-        file_name = uuid.uuid4().hex
+        file_name = uuid.uuid4().hex + '.data'
         
         tensors = []
         for f in dataclasses.fields(data_entry):
@@ -32,8 +34,18 @@ class DataEntryWriter:
 
 class DataEntryReader:
     def read(self, path : Path) -> DataEntry:
-        pass
+        tensors = torch.load(path)
+        
+        if len(tensors) != len(dataclasses.fields(DataEntry)):
+            raise IndexError('Amount of tensors doesn\'t fit DataEntry format')
+            
+        return DataEntry(tensors[0], tensors[1], tensors[2], tensors[3]) # TODO: change to file names
 
     
-    def write(self, data_entries : List[DataEntry], path : Path) -> List[DataEntry]:
-        pass
+    def read_all(self, paths : List[Path]) -> List[DataEntry]:
+        return [self.read(p) for p in paths]
+
+
+    def read_dir(self, path : Path) -> List[DataEntry]:
+        all_paths = path.glob('*.data')
+        return self.read_all(all_paths)
