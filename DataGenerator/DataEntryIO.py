@@ -49,3 +49,4 @@ class DataEntryReader:
     def read_dir(self, path : Path) -> List[DataEntry]:
         all_paths = path.glob('*.data')
         return self.read_all(all_paths)
+

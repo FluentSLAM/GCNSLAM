@@ -24,7 +24,7 @@ class AccessPoint:
     
     
     def measure_distance(self, pos : int, graph : nx.Graph):
-        dist = nx.shortest_path(graph, self._node, pos, weight='weight')
+        dist = nx.shortest_path_length(graph, self._node, pos, weight='weight')
         
         if(dist <= self._signal_range):
             return dist
