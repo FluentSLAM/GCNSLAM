@@ -15,25 +15,33 @@ class ChebyNet(nn.Module):
     """
     https://arxiv.org/pdf/1606.09375v3.pdf
     """
-    def __init__(self, n_feat, n_hid, n_class, enable_bias, K_order, K_layer, droprate):
+    def __init__(
+            self, 
+            input_size : int, 
+            hidden_size : int, 
+            output_size : int, 
+            enable_bias : bool, 
+            poly_order : int, 
+            hidden_layers_number : int, 
+            droprate : float):
         """
         
 
         Parameters
         ----------
-        n_feat : TYPE
+        input_size : int
             DESCRIPTION.
-        n_hid : TYPE
+        hidden_size : int
             DESCRIPTION.
-        n_class : TYPE
+        output_size : int
             DESCRIPTION.
-        enable_bias : TYPE
+        enable_bias : bool
             DESCRIPTION.
-        K_order : TYPE
+        poly_order : int
             DESCRIPTION.
-        K_layer : TYPE
+        hidden_layers_number : int
             DESCRIPTION.
-        droprate : TYPE
+        droprate : float
             DESCRIPTION.
 
         Returns
@@ -44,23 +52,23 @@ class ChebyNet(nn.Module):
         super(ChebyNet, self).__init__()
         
         self.cheb_graph_convs = nn.ModuleList()
-        self.K_order = K_order
-        self.K_layer = K_layer
-        self.cheb_graph_convs.append(layers.ChebConvLayer(K_order, n_feat, n_hid, enable_bias))
+        self.poly_order = poly_order
+        self.hidden_layers_number = hidden_layers_number
         
-        for k in range(1, K_layer-1):
-            self.cheb_graph_convs.append(layers.ChebConvLayer(K_order, n_hid, n_hid, enable_bias))
-            
-        self.cheb_graph_convs.append(layers.ChebConvLayer(K_order, n_hid, n_class, enable_bias))
-        self.relu = nn.ReLU()
+        self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, input_size, hidden_size, enable_bias))
+        for k in range(hidden_layers_number):
+            self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, hidden_size, hidden_size, enable_bias))
+        self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, hidden_size, output_size, enable_bias))
+        
+        self.leaky_leaky_relu = nn.Leakyleaky_relu()
         self.dropout = nn.Dropout(p=droprate)
         self.log_softmax = nn.LogSoftmax(dim=1)
 
 
     def forward(self, x, gso):
-        for k in range(self.K_layer-1):
+        for k in range(self.hidden_layers_number-1):
             x = self.cheb_graph_convs[k](x, gso)
-            x = self.relu(x)
+            x = self.leaky_relu(x)
             x = self.dropout(x)
         x = self.cheb_graph_convs[-1](x, gso)
         x = self.log_softmax(x)
