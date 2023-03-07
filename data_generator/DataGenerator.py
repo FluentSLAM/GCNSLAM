@@ -12,9 +12,9 @@ import torch
 from typing import Callable, List
 from torch import Tensor
 
-from DataGenerator.GraphGenerator import GraphGenerator
-from DataGenerator.DataEntry import DataEntry
-from DataGenerator.AccessPoint import AccessPoint
+from .GraphGenerator import GraphGenerator
+from .DataEntry import DataEntry
+from .AccessPoint import AccessPoint
 
 
 class DataGenerator:

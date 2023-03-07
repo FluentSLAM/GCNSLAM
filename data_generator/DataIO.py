@@ -10,13 +10,13 @@ import torch
 import dataclasses
 
 from pathlib import Path
-from DataGenerator.DataEntry import DataEntry
+from .DataEntry import DataEntry
 from typing import List
 
 
 # TODO: rewrite it to ZipFile, separate files inside the archive instead of blindly parsing tensors.
 
-class DataEntryWriter:
+class DataWriter:
     def write(self, data_entry : DataEntry, path : Path):
         file_name = uuid.uuid4().hex + '.data'
         
@@ -32,7 +32,7 @@ class DataEntryWriter:
             self.write(d, path)
 
 
-class DataEntryReader:
+class DataReader:
     def read(self, path : Path) -> DataEntry:
         tensors = torch.load(path)
         

@@ -8,10 +8,11 @@ Created on Tue Feb 28 21:54:06 2023
 
 import torch
 import torch.nn as nn
-from model import layers
+
+from .ChebConvLayer import ChebConvLayer
 
 
-class ChebyNet(nn.Module):
+class ChebNet(nn.Module):
     """
     https://arxiv.org/pdf/1606.09375v3.pdf
     """
@@ -49,18 +50,18 @@ class ChebyNet(nn.Module):
         None.
 
         """
-        super(ChebyNet, self).__init__()
+        super(ChebNet, self).__init__()
         
         self.cheb_graph_convs = nn.ModuleList()
         self.poly_order = poly_order
         self.hidden_layers_number = hidden_layers_number
         
-        self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, input_size, hidden_size, enable_bias))
+        self.cheb_graph_convs.append(ChebConvLayer(poly_order, input_size, hidden_size, enable_bias))
         for k in range(hidden_layers_number):
-            self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, hidden_size, hidden_size, enable_bias))
-        self.cheb_graph_convs.append(layers.ChebConvLayer(poly_order, hidden_size, output_size, enable_bias))
+            self.cheb_graph_convs.append(ChebConvLayer(poly_order, hidden_size, hidden_size, enable_bias))
+        self.cheb_graph_convs.append(ChebConvLayer(poly_order, hidden_size, output_size, enable_bias))
         
-        self.leaky_leaky_relu = nn.Leakyleaky_relu()
+        self.leaky_relu = nn.LeakyReLU()
         self.dropout = nn.Dropout(p=droprate)
         self.log_softmax = nn.LogSoftmax(dim=1)
 
