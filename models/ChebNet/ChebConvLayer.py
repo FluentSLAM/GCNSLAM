@@ -43,7 +43,7 @@ class ChebConvLayer(nn.Module):
         self.weight = nn.Parameter(FloatTensor(order, input_size, output_size))
         
         if bias_enabled:
-            self.bias = nn.Parameter(FloatTensor(input_size, output_size))
+            self.bias = nn.Parameter(FloatTensor(order, input_size, output_size))
         else:
             self.register_parameter('bias', None)
         self.reset_parameters()
@@ -63,7 +63,6 @@ class ChebConvLayer(nn.Module):
         
         if self.bias is not None:
             convolution = torch.add(input=convolution, other=self.bias, alpha=1)
-        
         return convolution
 
     
