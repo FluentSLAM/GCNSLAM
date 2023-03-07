@@ -24,7 +24,6 @@ class DataGenerator:
         self._graph_generator = GraphGenerator(weight_min, weight_max)
     
     
-    
     def generate_data(self,
                       N : int,
                       nodes_number : int,
@@ -33,7 +32,6 @@ class DataGenerator:
                       noise_source : Callable[[], float]) -> List[DataEntry]:
         return [self.generate_data_entry(nodes_number, ap_number, signal_range, noise_source) for i in range(N)]
         
-    
     
     def generate_data_entry(self,
                             nodes_number : int,
@@ -75,7 +73,7 @@ class DataGenerator:
         
     
     def __create_agent_tensor(self, graph : nx.Graph, agent_pos : int) -> Tensor:
-        tensor = torch.zeros(len(graph))
+        tensor = torch.zeros(len(graph), 1)
         tensor[agent_pos] = 1
         return tensor
 
@@ -90,10 +88,9 @@ class DataGenerator:
             agent_pos : int, 
             access_points : List[AccessPoint], 
             noise_source : Callable[[], float]) -> Tensor:
-        number = len(access_points)
-        tensor = Tensor(number)
-        for i in range(0, number):
-            tensor[i] = access_points[i].measure_distance(agent_pos, graph) # TODO: add noise
+        tensor = torch.full((len(graph), 1), -1, dtype=torch.float32)
+        for ap in access_points:
+            tensor[ap.get_node()] = ap.measure_distance(agent_pos, graph) # TODO: add noise
         return tensor
             
 
