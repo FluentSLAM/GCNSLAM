@@ -67,7 +67,7 @@ class ChebNet(nn.Module):
 
 
     def forward(self, x, gso):
-        for k in range(self.hidden_layers_number-1):
+        for k in range(len(self.cheb_graph_convs)-1):
             x = self.cheb_graph_convs[k](x, gso)
             x = self.leaky_relu(x)
             x = self.dropout(x)

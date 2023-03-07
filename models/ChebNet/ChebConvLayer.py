@@ -43,7 +43,7 @@ class ChebConvLayer(nn.Module):
         self.weight = nn.Parameter(FloatTensor(order, input_size, output_size))
         
         if bias_enabled:
-            self.bias = nn.Parameter(FloatTensor(order, input_size, output_size))
+            self.bias = nn.Parameter(FloatTensor(input_size, output_size))
         else:
             self.register_parameter('bias', None)
         self.reset_parameters()
@@ -63,6 +63,7 @@ class ChebConvLayer(nn.Module):
         
         if self.bias is not None:
             convolution = torch.add(input=convolution, other=self.bias, alpha=1)
+        
         return convolution
 
     
@@ -97,16 +98,15 @@ class ChebConvLayer(nn.Module):
             cheb_poly_parts.append(x)
         else:
             cheb_poly_parts.append(x)
-            if gso.is_sparce:
+            if gso.is_sparse:
                 self.__sparce_cheb_polynomial(cheb_poly_parts, gso, x)
             else:
                 self.__cheb_polynomial(cheb_poly_parts, gso, x)
         
         feature = torch.stack(cheb_poly_parts, dim=0)
         
-        if feature.is_sparce:
+        if feature.is_sparse:
             feature = feature.to_dense()
-        
         return torch.einsum('bij,bjk->ik', feature, self.weight)
 
 
@@ -126,7 +126,7 @@ class ChebConvLayer(nn.Module):
         Computes parts Chebyshev polynomial for k > 0 for dense gso.
 
         """
-        if x.is_sparce:
+        if x.is_sparse:
             x = x.to_dense()
         cheb_poly_parts.append(torch.mm(gso, x))
                 
