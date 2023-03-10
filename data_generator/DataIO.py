@@ -19,12 +19,7 @@ from typing import List
 class DataWriter:
     def write(self, data_entry : DataEntry, path : Path):
         file_name = uuid.uuid4().hex + '.data'
-        
-        tensors = []
-        for f in dataclasses.fields(data_entry):
-            tensors.append(getattr(data_entry, f.name))
-        
-        torch.save(tensors, path/file_name)
+        torch.save(data_entry, path/file_name)
         
     
     def write_all(self, data_entries : List[DataEntry], path : Path):
@@ -34,12 +29,7 @@ class DataWriter:
 
 class DataReader:
     def read(self, path : Path) -> DataEntry:
-        tensors = torch.load(path)
-        
-        if len(tensors) != len(dataclasses.fields(DataEntry)):
-            raise IndexError('Amount of tensors doesn\'t fit DataEntry format')
-            
-        return DataEntry(tensors[0], tensors[1], tensors[2], tensors[3]) # TODO: change to file names
+        return torch.load(path)
 
     
     def read_all(self, paths : List[Path]) -> List[DataEntry]:
