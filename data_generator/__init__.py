@@ -9,3 +9,5 @@ from .AccessPoint import AccessPoint
 from .DataGenerator import DataGenerator
 from .DataEntry import DataEntry
 from .GraphGenerator import GraphGenerator
+from .AbstractDataEntry import AbstractDataEntry
+from .GNNDataset import GNNDataset
