@@ -73,8 +73,13 @@ class DataGenerator:
         
     
     def __create_agent_tensor(self, graph : nx.Graph, agent_pos : int) -> Tensor:
-        tensor = torch.zeros(len(graph), 1)
-        tensor[agent_pos] = 1
+        tensor = torch.zeros(len(graph), 2)
+        
+        for i in range(len(graph)):
+            if i == agent_pos:
+                tensor[i][0] = 1
+            else:
+                tensor[i][1] = 1
         return tensor
 
     
