@@ -92,10 +92,11 @@ class DataGenerator:
             graph : nx.Graph, 
             agent_pos : int, 
             access_points : List[AccessPoint], 
-            noise_source : Callable[[], float]) -> Tensor:
+            apply_noise : Callable[[], float]) -> Tensor:
         tensor = torch.full((len(graph), 1), -1, dtype=torch.float32)
         for ap in access_points:
-            tensor[ap.get_node()] = ap.measure_distance(agent_pos, graph) # TODO: add noise
+            m = ap.measure_distance(agent_pos, graph)
+            tensor[ap.get_node()] = apply_noise(m)
         return tensor
             
 

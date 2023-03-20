@@ -14,6 +14,7 @@ from typing import List
 
 class ChebConvLayer(nn.Module):
     """
+    [ARCHIVED]
     https://arxiv.org/abs/1606.09375v3
     """
     
@@ -39,7 +40,9 @@ class ChebConvLayer(nn.Module):
         """
         super(ChebConvLayer, self).__init__()
         
-        self.order = order
+        self._order = order
+        self._input_size = output_size
+        self._output_size = output_size
         self.weight = nn.Parameter(FloatTensor(order, input_size, output_size))
         
         if bias_enabled:
@@ -91,9 +94,9 @@ class ChebConvLayer(nn.Module):
         """
         cheb_poly_parts = []
         
-        if self.order < 0:
+        if self._order < 0:
             raise ValueError('Chebyshev polinomial order shold not be less than 0')
-        elif self.order == 0:
+        elif self._order == 0:
             cheb_poly_parts.append(x)
         else:
             cheb_poly_parts.append(x)
@@ -106,6 +109,7 @@ class ChebConvLayer(nn.Module):
         
         if feature.is_sparse:
             feature = feature.to_dense()
+        
         return torch.einsum('bij,bjk->ik', feature, self.weight)
 
 
@@ -116,7 +120,7 @@ class ChebConvLayer(nn.Module):
         """
         cheb_poly_parts.append(torch.sparce.mm(gso, x))
         
-        for k in range(2, self.order):
+        for k in range(2, self._order):
             cheb_poly_parts.append(torch.sparse.mm(2 * gso, cheb_poly_parts[k - 1]) - cheb_poly_parts[k - 2])
 
 
@@ -128,7 +132,7 @@ class ChebConvLayer(nn.Module):
         if x.is_sparse:
             x = x.to_dense()
         cheb_poly_parts.append(torch.mm(gso, x))
-                
-        for k in range(2, self.order):
+        
+        for k in range(2, self._order):
             cheb_poly_parts.append(torch.mm(2 * gso, cheb_poly_parts[k - 1]) - cheb_poly_parts[k - 2])        
 

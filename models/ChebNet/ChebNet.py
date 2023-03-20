@@ -6,7 +6,6 @@ Created on Tue Feb 28 21:54:06 2023
 """
 
 
-import torch
 import torch.nn as nn
 
 from .ChebConvLayer import ChebConvLayer
@@ -14,6 +13,7 @@ from .ChebConvLayer import ChebConvLayer
 
 class ChebNet(nn.Module):
     """
+    [ARCHIVED]
     https://arxiv.org/pdf/1606.09375v3.pdf
     """
     def __init__(
@@ -63,8 +63,7 @@ class ChebNet(nn.Module):
         
         self.leaky_relu = nn.LeakyReLU()
         self.dropout = nn.Dropout(p=droprate)
-        self.log_softmax = nn.LogSoftmax(dim=1)
-
+        
 
     def forward(self, x, gso):
         for k in range(len(self.cheb_graph_convs)-1):
@@ -72,7 +71,6 @@ class ChebNet(nn.Module):
             x = self.leaky_relu(x)
             x = self.dropout(x)
         x = self.cheb_graph_convs[-1](x, gso)
-        x = self.log_softmax(x)
 
         return x
 
